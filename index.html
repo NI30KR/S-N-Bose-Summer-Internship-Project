@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeakEazy - English to Hindi Video Translator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e0f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('transimage.png'); /* Add a relevant background image */
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 90%;
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            background-color: #00796b;
+            color: white;
+            padding: 20px 0;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+        }
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            background-color: #fafafa;
+            color: #00796b;
+        }
+        button {
+            padding: 10px;
+            font-size: 1em;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+        }
+        video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #00796b;
+            color: white;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SpeakEazy</h1>
+            <p>English to Hindi Video Translator</p>
+        </div>
+        <form id="uploadForm">
+            <label for="videoUpload">Upload Video:</label>
+            <input type="file" id="videoUpload" accept="video/*" required>
+            <button type="submit">Translate</button>
+        </form>
+        <div id="result"></div>
+        <div class="footer">
+            <p>&copy; 2024 SpeakEazy</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const videoFile = document.getElementById('videoUpload').files[0];
+            if (videoFile) {
+                const formData = new FormData();
+                formData.append('video', videoFile);
+
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '<p>Processing...</p>';
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        resultDiv.innerHTML = `<video controls src="${data.videoUrl}"></video>`;
+                    } else {
+                        resultDiv.innerHTML = '<p>Error processing video. Please try again.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultDiv.innerHTML = '<p>Error processing video. Please try again.</p>';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
